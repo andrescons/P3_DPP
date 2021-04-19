@@ -1,19 +1,26 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import icon from '../assets/icon.svg';
 import './App.global.css';
 import { useGoogleMaps } from "react-hook-google-maps";
 
+const uluru = { lat: -25.344, lng: 131.036 };
 
 
-const SideBar = (props) => {
+const SideBar = (props: {setPath}) => {
   const [searchInputValue, setSearchInputValue] = useState('')
   const [results, setResults] = useState([])
 
+  const onSubmit = ()=> {
+    // magia 
+
+   
+  }
 
   const onSearchInputChange = (e)=> {
     setSearchInputValue(e.target.value)
-    setResults([...results,e.target.value ])
+     setResults([...results,e.target.value ])
+    props.setPath(results)
   }
 
   return (
@@ -38,7 +45,7 @@ const SideBar = (props) => {
 
 
 
-const Map = ()=> {
+const Map = (props)=> {
   const { ref, map, google } = useGoogleMaps(
     // Use your own API key, you can get one from Google (https://console.cloud.google.com/google/maps-apis/overview)
     "AIzaSyC4Z5Qz97EWcoCczNn2IcYvaYG0L9pe6Rk",
@@ -49,6 +56,17 @@ const Map = ()=> {
     },
   );
 
+  useEffect(()=> {
+    console.log('AQUI', map, props.path)
+    if (map) {
+      // execute when map object is ready
+      new google.maps.Marker({ position: uluru, map });
+    }
+
+  //  new google.maps.Marker({ position: uluru, map });
+  } ,[props.path])
+
+  
   return (
     <div
     ref={ref} style={{ width: '80vh', height: '100%' }}
@@ -59,14 +77,15 @@ const Map = ()=> {
 
 
 const Screen = ()=> {
+  const [path, setPath] = useState([])
+
   return(
   <div style={{
     display:'flex',
     flexDirection:'row'
   }}>
-    <SideBar ></SideBar> 
-    
-    <Map/>
+    <SideBar setPath={setPath}></SideBar>    
+    <Map path={path}/>
   </div>)
 }
 
